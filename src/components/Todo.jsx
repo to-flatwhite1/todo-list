@@ -1,35 +1,45 @@
 'use client';
+
 import React, { useState } from 'react';
 import TodoHd from './TodoHd';
 import TodoEditor from './TodoEditor';
 import TodoList from './TodoList';
-import { mockTodosData } from '@/data/todoData';
-import { format } from 'date-fns';
+import { mockTodoData } from '@/data/todoData';
 
 const Todo = () => {
-    const [todos, setTodos] = useState(mockTodosData);
+    const [todos, setTodos] = useState(mockTodoData);
 
-    //할일 추가하는 함수
+    // 할 일 추가하는 함수
     const addTodo = (task) => {
-        setTodos([
-            ...todos,
-            {
-                id: todos.length + 1,
-                isDone: false,
-                task: task,
-                createDate: new Date().toLocaleDateString(),
-            },
-        ]);
+        const newTodo = {
+            id: todos.length + 1,
+            isDone: false,
+            task: task,
+            createDate: new Date().toLocaleDateString(),
+        };
+        setTodos([newTodo, ...todos]);
     };
+
+    // 완료 표시 함수
+    const onUpdate = (id) => {
+        setTodos(
+            todos.map((todo) => {
+                return todo.id === id ? { ...todo, isDone: !todo.isDone } : todo;
+            })
+        );
+    };
+
+    // 할 일 삭제 함수
+    const onDelete = (id) => {
+        setTodos(todos.filter((todo) => todo.id !== id));
+    };
+
     return (
-        <>
-            <h1 className="text-center">Todo</h1>
-            <div className="flex flex-col  w-3/5 m-auto text-center ">
-                <TodoHd />
-                <TodoEditor addTodo={addTodo} />
-                <TodoList mockTodosData={todos} />
-            </div>
-        </>
+        <div className="flex flex-col gap-4 p-8 pb-40">
+            <TodoHd />
+            <TodoEditor addTodo={addTodo} />
+            <TodoList mockTodoData={todos} onUpdate={onUpdate} onDelete={onDelete} />
+        </div>
     );
 };
 
